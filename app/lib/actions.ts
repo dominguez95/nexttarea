@@ -1,11 +1,11 @@
 "use server";
 
-import { z } from "zod";
-import postgres from "postgres";
+import { AuthError } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import postgres from "postgres";
+import { z } from "zod";
 import { signIn } from "../auth";
-import { AuthError } from "next-auth";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
@@ -42,6 +42,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
     amount: formData.get("amount"),
     status: formData.get("status"),
   });
+  console.log(prevState);
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
@@ -84,7 +85,7 @@ export async function updateInvoice(
     amount: formData.get("amount"),
     status: formData.get("status"),
   });
-
+  console.log(prevState);
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -118,6 +119,7 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData
 ) {
+  console.log(prevState);
   try {
     await signIn("credentials", formData);
   } catch (error) {
